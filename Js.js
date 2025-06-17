@@ -15,7 +15,6 @@ for(let i = 0; i < Hours.length; i++) {
     }
 }
 
-document.getElementById("soundButtons").classList.add("d-none");
 document.getElementById("timeButtons").classList.add("d-none");
 document.getElementById("Zoomable").style.scale = 1.5
 
@@ -52,13 +51,11 @@ function openList(id){
     if (listOpen == false){
         listOpen = true
             document.getElementById("opener").innerText = "Schließen"
-            //document.getElementById("soundButtons").classList.remove("d-none")
             document.getElementById("timeButtons").classList.remove("d-none")
             document.getElementById("Zoomable").style.scale = 1
     }else{
         listOpen = false
             document.getElementById("opener").innerText = "Öffnen"
-            //document.getElementById("soundButtons").classList.add("d-none")
             document.getElementById("timeButtons").classList.add("d-none")
             document.getElementById("Zoomable").style.scale = 1.5
     }
