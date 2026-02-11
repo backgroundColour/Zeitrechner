@@ -3,28 +3,68 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Schul-Timer</title>
+  <title>Schul-Dashboard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="wrap">
-    <!-- "big-card" für das vergrößerte Fenster -->
-    <section class="card big-card" aria-live="polite">
-      <h1 id="MainTitle">Laden...</h1>
-      <p id="TimeDisplay" class="time-text">—</p>
+  
+  <div class="background-layer"></div>
 
-      <div class="controls">
-        <button id="opener" type="button" aria-expanded="false" aria-controls="timeButtons">
-          Öffnen
-        </button>
-        <button id="autoMode" type="button" class="ghost" hidden>
-          Zurück zu Auto
-        </button>
+  <main class="dashboard">
+    <!-- Linke Spalte: Timer & Stunden -->
+    <section class="card glass-panel timer-section">
+      <header class="card-header">
+        <span class="badge">Nächste Stunde</span>
+        <h2 id="MainTitle">Laden...</h2>
+      </header>
+
+      <div class="timer-display">
+        <div id="TimeDisplay" class="big-time">—</div>
+        <div id="SubText" class="sub-text">...</div>
       </div>
 
-      <!-- Menü ist durch 'hidden' standardmäßig ausgeblendet -->
-      <div id="timeButtons" class="grid" hidden></div>
+      <div class="controls">
+        <button id="opener" type="button" class="btn-icon">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          <span>Stundenplan</span>
+        </button>
+        <button id="autoMode" type="button" class="btn-ghost" hidden>Auto-Modus</button>
+      </div>
+
+      <div id="timeButtons" class="schedule-grid" hidden></div>
     </section>
+
+    <!-- Rechte Spalte: Info & Wetter -->
+    <aside class="sidebar">
+      
+      <!-- Schultag Fortschritt (Mo/Di) -->
+      <section class="card glass-panel progress-card">
+        <h3>Schultag</h3>
+        <div class="progress-container">
+          <div class="progress-labels">
+            <span>07:55</span>
+            <span>14:40</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div id="SchoolProgress" class="progress-bar-fill" style="width: 0%"></div>
+          </div>
+          <div id="ProgressText" class="progress-info">Nicht aktiv</div>
+        </div>
+      </section>
+
+      <!-- Wetter Wipperfürth -->
+      <section class="card glass-panel weather-card">
+        <h3>Wipperfürth</h3>
+        <div class="weather-content">
+          <div id="WeatherIcon" class="weather-icon">☁️</div>
+          <div class="weather-data">
+            <div id="Temperature" class="temp">--°C</div>
+            <div id="WeatherDesc" class="desc">Lade Wetter...</div>
+          </div>
+        </div>
+      </section>
+
+    </aside>
   </main>
 
   <script src="app.js" defer></script>
