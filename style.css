@@ -1,63 +1,101 @@
-body {
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    margin: auto;
-    margin-top: -8%;
-    text-align: center;
-    padding: 20%;
-    background-image: url("background.png");
-    background-size: cover;
-    background-repeat: no-repeat;
-    font-style: italic;
+:root{
+  --glass: rgba(49, 47, 158, 0.22);
+  --text: #fff;
+  --btn: rgb(94, 97, 255);
+  --btnActive: rgb(82, 68, 157);
+  --cardRadius: 16px;
 }
 
-iframe {
-    border: 0px;
+* { box-sizing: border-box; }
+
+body{
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 800;
+  font-style: italic;
+  color: var(--text);
+
+  background-image: url("background.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-div {
-    background: rgba(49, 47, 158, 0.21);
-    border-radius: 16px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid transparent;
-    transition: scale 1s;
+.wrap{
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
 }
 
-.d-none {
-    display: none;
+.card{
+  width: min(720px, 100%);
+  padding: 22px;
+  background: var(--glass);
+  border-radius: var(--cardRadius);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.18);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.12);
 }
 
-h1, h2 {
-    font-size: xx-large;
-    color: white;
-    font-weight: 900;
+h1{
+  margin: 0 0 10px;
+  font-size: clamp(22px, 3.2vw, 34px);
 }
 
-button {
-    background-color: rgb(94, 97, 255);
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: bold;
-    text-decoration: none;
-    border-radius: 5px;
-    width: 40%;
-    font-size: 20px;
-    border: none;
+.timeText{
+  margin: 0 0 18px;
+  font-size: clamp(18px, 2.6vw, 28px);
 }
 
-button:active {
-    background-color: rgb(82, 68, 157);
-    transform: translateY(4px);
+.controls{
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
 }
 
-#timer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    padding: 10px;
-    font-size: large;
-    color: white;
-    font-weight: 900;
+button{
+  appearance: none;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: var(--btn);
+  color: var(--text);
+  font: inherit;
+  font-style: normal;
+  width: auto;
+  cursor: pointer;
+  transition: transform .08s ease, filter .15s ease;
+}
+
+button:hover{ filter: brightness(1.05); }
+
+button:active{
+  background: var(--btnActive);
+  transform: translateY(2px);
+}
+
+button:focus-visible{
+  outline: 3px solid rgba(255,255,255,0.85);
+  outline-offset: 3px;
+}
+
+button.ghost{
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.35);
+}
+
+.grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* Weniger Bewegung für Nutzer, die Reduced Motion eingestellt haben. [web:7] */
+@media (prefers-reduced-motion: reduce){
+  * { transition: none !important; }
 }

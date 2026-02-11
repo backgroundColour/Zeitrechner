@@ -1,63 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Datum und Uhrzeit</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Verbleibende Zeit</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div id="Zoomable">
-        <h1 id="VerbleibendeStunde">Verbleibende Zeit</h1>
-        <h2 id="Zeit">Noch 0 Stunden 0 Minuten 0 Sekunden bis 12:55</h2>
-    </div>
-    <br><br>
-    <br><br>
-    <button id="opener" onclick="openList('buttons')">Öffnen</button>  
-    <br><br> 
-    <div id="timeButtons">
-        <br>
-        <button id="Button1" onclick="setTime(0)">1. Stunde</button>
-        <button id="Button2" onclick="setTime(1)">2. Stunde</button>
-        <br><br>
-        <button id="Button3" onclick="setTime(2)">3. Stunde</button>
-        <button id="Button4" onclick="setTime(3)">4. Stunde</button>
-        <br>
-        <br>
-        <button id="Button5" onclick="setTime(4)">5. Stunde</button>
-        <button id="Button6" onclick="setTime(5)">6. Stunde</button>
-        <br>
-        <br>
-        <button id="Button7" onclick="setTime(6)">7. Stunde</button>
-        <button id="Button8" onclick="setTime(7)">8. Stunde</button>
-        <br>
-        <br>
-    </div>
-    <br>
-    <br>
-    <div id="timer"></div>
-    <script src="Js.js"></script>
-    <script>remainingTime()</script>
-    <script>
-        // Timer Script
-        const targetDate = new Date('2026-01-20T08:00:00'); // Hier kannst du das Ziel-Datum und die Ziel-Uhrzeit einstellen
-        const message = "der schmerz weiter geht"
+  <main class="wrap">
+    <section class="card" aria-live="polite">
+      <h1 id="VerbleibendeStunde">Verbleibende Zeit</h1>
+      <p id="Zeit" class="timeText">—</p>
 
-        function updateTimer() {
-            const now = new Date();
-            const difference = targetDate - now;
-            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+      <div class="controls">
+        <button id="opener" type="button" aria-expanded="false" aria-controls="timeButtons">
+          Öffnen
+        </button>
+        <button id="autoMode" type="button" class="ghost">
+          Auto
+        </button>
+      </div>
 
-            document.getElementById('timer').innerHTML =
-                `${days} Tage ${hours} Stunden ${minutes} Minuten ${seconds} Sekunden bis ${message}`;
+      <div id="timeButtons" class="grid" hidden></div>
+    </section>
+  </main>
 
-            setTimeout(updateTimer, 1000);
-        }
-
-        updateTimer();
-    </script>
+  <script src="app.js" defer></script>
 </body>
 </html>
