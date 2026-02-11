@@ -2,7 +2,7 @@
 
 // Konfiguration
 const SCHOOL_DAYS = [1, 2]; // 1 = Montag, 2 = Dienstag
-const START_TIME = { h: 7, m: 55 }; // Wann die 1. Stunde BEGINNT
+const START_TIME = { h: 7, m: 55 }; // Schulbeginn
 
 const periods = [
   { label: "1. Stunde", h: 8,  m: 40 },
@@ -22,12 +22,9 @@ const elOpener = document.getElementById("opener");
 const elAuto = document.getElementById("autoMode");
 const elButtons = document.getElementById("timeButtons");
 
-// Status
 let customMode = false;
 let customIndex = 0;
-let intervalId = null;
 
-// Hilfsfunktionen
 function pad2(n) { return String(n).padStart(2, "0"); }
 
 function getDateAt(baseDate, h, m) {
@@ -36,12 +33,11 @@ function getDateAt(baseDate, h, m) {
   return d;
 }
 
-// Berechnet das nächste Ziel (Auto-Modus)
 function getAutoState(now) {
-  const day = now.getDay(); // 0=So, 1=Mo, 2=Di, ...
+  const day = now.getDay(); 
   const isSchoolDay = SCHOOL_DAYS.includes(day);
 
-  // Fall 1: Heute ist Schultag
+  // Fall 1: Heute ist Schule
   if (isSchoolDay) {
     const startToday = getDateAt(now, START_TIME.h, START_TIME.m);
     
@@ -50,11 +46,11 @@ function getAutoState(now) {
       return { 
         target: startToday, 
         title: "Guten Morgen", 
-        prefix: "Schulbeginn in" 
+        prefix: "Beginn in" 
       };
     }
 
-    // B: Während der Schule (Prüfe Perioden)
+    // B: Während der Schule
     for (let i = 0; i < periods.length; i++) {
       const pEnd = getDateAt(now, periods[i].h, periods[i].m);
       if (now < pEnd) {
@@ -65,15 +61,14 @@ function getAutoState(now) {
         };
       }
     }
-    // C: Nach der letzten Stunde -> Weiter zu "Nächster Schultag"
   }
 
-  // Fall 2: Kein Schultag oder Schule vorbei -> Suche nächsten Start
+  // Fall 2: Nächster Schultag suchen
   let d = new Date(now);
-  d.setDate(d.getDate() + 1); // Starte Suche bei morgen
+  d.setDate(d.getDate() + 1); 
   d.setHours(START_TIME.h, START_TIME.m, 0, 0);
 
-  // Solange weiterspringen, bis wir auf Mo oder Di treffen
+  // Solange weiterspringen bis Mo(1) oder Di(2)
   while (!SCHOOL_DAYS.includes(d.getDay())) {
     d.setDate(d.getDate() + 1);
   }
@@ -90,9 +85,8 @@ function render() {
   let state;
 
   if (customMode) {
-    // Manuelle Auswahl simuliert "Während der Stunde"
     let target = getDateAt(now, periods[customIndex].h, periods[customIndex].m);
-    if (now > target) target.setDate(target.getDate() + 1); // Falls Zeit schon vorbei, morgen nehmen
+    if (now > target) target.setDate(target.getDate() + 1);
     
     state = {
       target: target,
@@ -103,66 +97,69 @@ function render() {
     state = getAutoState(now);
   }
 
-  // Zeitdifferenz berechnen
   const diffMs = Math.max(0, state.target - now);
-  
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diffMs / (1000 * 60 * 60)) % 24);
   const minutes = Math.floor((diffMs / (1000 * 60)) % 60);
   const seconds = Math.floor((diffMs / 1000) % 60);
 
-  // Text zusammenbauen
   let timeString = "";
   if (days > 0) timeString += `${days} Tage `;
   if (days > 0 || hours > 0) timeString += `${hours} Stunden `;
   timeString += `${minutes} Minuten ${seconds} Sekunden`;
 
-  // UI Update
   elTitle.textContent = state.title;
   
-  // Spezialfall für "Prefix"-Formatierung
-  if (state.prefix.includes("Noch ... bis")) {
-     // Ersetze das "..." durch die Zeit
-     // Beispiel: "Noch 10 Minuten 5 Sekunden bis 12:00"
+  if (state.prefix.includes("...")) {
      elText.textContent = state.prefix.replace("...", timeString);
   } else {
-     // Standard: "Beginn in X Tagen Y Stunden..."
      elText.textContent = `${state.prefix} ${timeString}`;
   }
 }
 
-// Buttons erstellen
-function initButtons() {
+// Initialisierung
+function init() {
+  // Buttons generieren (mit data-Attribut statt onclick)
   elButtons.innerHTML = periods.map((p, i) => 
-    `<button type="button" onclick="setCustom(${i})">${p.label}</button>`
+    `<button type="button" data-index="${i}">${p.label}</button>`
   ).join("");
+
+  // Events registrieren
+  
+  // 1. Öffnen/Schließen
+  elOpener.addEventListener("click", () => {
+    const isHidden = elButtons.hidden;
+    elButtons.hidden = !isHidden; // Toggle
+    elOpener.textContent = isHidden ? "Schließen" : "Öffnen";
+    elOpener.setAttribute("aria-expanded", !isHidden);
+  });
+
+  // 2. Stunden-Auswahl (Delegation)
+  elButtons.addEventListener("click", (e) => {
+    if (e.target.tagName === "BUTTON") {
+      const idx = Number(e.target.dataset.index);
+      customMode = true;
+      customIndex = idx;
+      
+      // UI zurücksetzen
+      elButtons.hidden = true;
+      elOpener.textContent = "Öffnen";
+      elAuto.hidden = false;
+      render();
+    }
+  });
+
+  // 3. Auto-Reset
+  elAuto.addEventListener("click", () => {
+    customMode = false;
+    elAuto.hidden = true;
+    render();
+  });
+
+  // Timer starten
+  setInterval(render, 1000);
+  render();
 }
 
-// Globale Funktionen für HTML-Buttons
-window.openList = function(id) { // Name beibehalten für Kompatibilität
-  const isHidden = elButtons.hidden;
-  elButtons.hidden = !isHidden;
-  elOpener.textContent = isHidden ? "Schließen" : "Öffnen";
-  elOpener.setAttribute("aria-expanded", !isHidden);
-};
-
-window.setCustom = function(index) {
-  customMode = true;
-  customIndex = index;
-  elButtons.hidden = true; // Menü schließen nach Auswahl
-  elOpener.textContent = "Öffnen";
-  elAuto.hidden = false; // "Auto"-Button zeigen
-  render();
-};
-
-// Event Listener für Auto-Reset
-elAuto.addEventListener("click", () => {
-  customMode = false;
-  elAuto.hidden = true;
-  render();
-});
-
 // Start
-initButtons();
-setInterval(render, 1000);
-render(); // Sofort-Update
+init();
