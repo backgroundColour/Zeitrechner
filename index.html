@@ -3,24 +3,26 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Verbleibende Zeit</title>
+  <title>Schul-Timer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <main class="wrap">
-    <section class="card" aria-live="polite">
-      <h1 id="VerbleibendeStunde">Verbleibende Zeit</h1>
-      <p id="Zeit" class="timeText">—</p>
+    <!-- "big-card" für das vergrößerte Fenster -->
+    <section class="card big-card" aria-live="polite">
+      <h1 id="MainTitle">Laden...</h1>
+      <p id="TimeDisplay" class="time-text">—</p>
 
       <div class="controls">
         <button id="opener" type="button" aria-expanded="false" aria-controls="timeButtons">
           Öffnen
         </button>
-        <button id="autoMode" type="button" class="ghost">
-          Auto
+        <button id="autoMode" type="button" class="ghost" hidden>
+          Zurück zu Auto
         </button>
       </div>
 
+      <!-- Menü ist durch 'hidden' standardmäßig ausgeblendet -->
       <div id="timeButtons" class="grid" hidden></div>
     </section>
   </main>
