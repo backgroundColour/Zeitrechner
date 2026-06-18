@@ -87,26 +87,29 @@
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02), inset 0 0 0 1px var(--border-color);
       display: flex;
       flex-direction: column;
-      overflow-y: auto;
-      padding: 40px 60px;
+      overflow: hidden; 
     }
 
-    .timer-card {
-      margin-bottom: 60px;
+    .timer-section {
+      flex: 1; 
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 40px 60px;
     }
 
     h1 {
       margin: 0 0 12px;
-      font-size: 3rem;
+      font-size: clamp(2.5rem, 6vw, 4rem);
       font-weight: 700;
       letter-spacing: -0.02em;
     }
 
     .time-text {
-      font-size: 2.8rem;
+      font-size: clamp(2.5rem, 6vw, 4rem);
       font-weight: 600;
       color: var(--apple-blue);
-      margin: 0 0 25px;
+      margin: 0 0 35px;
       letter-spacing: -0.01em;
     }
 
@@ -119,12 +122,12 @@
       appearance: none;
       border: 1px solid var(--border-color);
       border-radius: var(--radius);
-      padding: 8px 16px;
+      padding: 10px 20px;
       background: #f5f5f7;
       color: var(--text-main);
       font-family: inherit;
       font-weight: 500;
-      font-size: 1rem;
+      font-size: 1.05rem;
       cursor: pointer;
     }
 
@@ -132,14 +135,26 @@
     button.primary { background: var(--apple-blue); color: white; border: none; }
     button.primary:hover { background: #0077ED; }
 
-    .news-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 30px;
-      padding-bottom: 40px;
+    .news-section {
+      padding: 0 0 40px 60px;
+    }
+
+    .news-slider {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-right: 60px; 
+      scrollbar-width: none; 
+    }
+
+    .news-slider::-webkit-scrollbar {
+      display: none; 
     }
 
     .news-card {
+      scroll-snap-align: start;
+      flex: 0 0 240px; 
       text-decoration: none;
       color: inherit;
       display: flex;
@@ -148,9 +163,10 @@
     }
 
     .news-img-wrap {
-      aspect-ratio: 1;
+      width: 240px;
+      height: 240px;
       background: #f5f5f7;
-      border-radius: 12px;
+      border-radius: 14px;
       overflow: hidden;
       border: 1px solid var(--border-color);
     }
@@ -195,7 +211,7 @@
   </aside>
 
   <main class="content-area">
-    <div class="timer-card">
+    <div class="timer-section">
       <h1 id="MainTitle">Laden...</h1>
       <p id="TimeDisplay" class="time-text"></p>
       
@@ -207,8 +223,10 @@
       <div id="timeButtons" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px;" hidden></div>
     </div>
 
-    <div class="news-grid" id="newsGrid">
-      <p style="color: var(--text-muted)">Lade Nachrichten...</p>
+    <div class="news-section">
+      <div class="news-slider" id="newsGrid">
+        <p style="color: var(--text-muted)">Lade Nachrichten...</p>
+      </div>
     </div>
   </main>
 
@@ -333,7 +351,14 @@
             newsGrid.innerHTML = data.items.slice(0, 10).map(item => {
               const date = new Date(item.pubDate.replace(' ', 'T')).toLocaleString("de-DE", { hour: '2-digit', minute:'2-digit' });
               
-              const imgHtml = item.thumbnail ? `<img src="${item.thumbnail}" class="news-img">` : `<div class="news-img" style="display:grid;place-items:center;background:#eee">Ohne Bild</div>`;
+              let imgUrl = item.thumbnail || "";
+              
+              if (!imgUrl && item.content) {
+                const match = item.content.match(/src="([^"]+\.jpg[^"]*)"/i);
+                if (match) imgUrl = match[1];
+              }
+
+              const imgHtml = imgUrl ? `<img src="${imgUrl}" class="news-img">` : `<div class="news-img" style="display:grid;place-items:center;background:#eee">Ohne Bild</div>`;
 
               return `
                 <a href="${item.link}" target="_blank" class="news-card">
