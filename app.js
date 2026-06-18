@@ -1,8 +1,9 @@
 "use strict";
 
-// Konfiguration
-const SCHOOL_DAYS = [1, 2]; // 1 = Montag, 2 = Dienstag
-const START_TIME = { h: 7, m: 55 }; // Schulbeginn
+const SCHOOL_DAYS = [1, 2];
+const WORK_DAYS = [3, 4, 5];
+const START_TIME = { h: 7, m: 55 };
+const WORK_END_TIME = { h: 16, m: 0 };
 
 const periods = [
   { label: "1. Stunde", h: 8,  m: 40 },
@@ -15,7 +16,6 @@ const periods = [
   { label: "8. Stunde", h: 14, m: 40 },
 ];
 
-// Elemente
 const elTitle = document.getElementById("MainTitle");
 const elText = document.getElementById("TimeDisplay");
 const elOpener = document.getElementById("opener");
@@ -35,13 +35,10 @@ function getDateAt(baseDate, h, m) {
 
 function getAutoState(now) {
   const day = now.getDay(); 
-  const isSchoolDay = SCHOOL_DAYS.includes(day);
-
-  // Fall 1: Heute ist Schule
-  if (isSchoolDay) {
+  
+  if (SCHOOL_DAYS.includes(day)) {
     const startToday = getDateAt(now, START_TIME.h, START_TIME.m);
     
-    // A: Vor Schulbeginn
     if (now < startToday) {
       return { 
         target: startToday, 
@@ -50,7 +47,6 @@ function getAutoState(now) {
       };
     }
 
-    // B: Während der Schule
     for (let i = 0; i < periods.length; i++) {
       const pEnd = getDateAt(now, periods[i].h, periods[i].m);
       if (now < pEnd) {
@@ -63,21 +59,40 @@ function getAutoState(now) {
     }
   }
 
-  // Fall 2: Nächster Schultag suchen
-  let d = new Date(now);
-  d.setDate(d.getDate() + 1); 
-  d.setHours(START_TIME.h, START_TIME.m, 0, 0);
-
-  // Solange weiterspringen bis Mo(1) oder Di(2)
-  while (!SCHOOL_DAYS.includes(d.getDay())) {
-    d.setDate(d.getDate() + 1);
+  if (WORK_DAYS.includes(day)) {
+    const workEndToday = getDateAt(now, WORK_END_TIME.h, WORK_END_TIME.m);
+    if (now < workEndToday) {
+      return {
+        target: workEndToday,
+        title: "Arbeitszeit",
+        prefix: `Noch ... bis ${pad2(WORK_END_TIME.h)}:${pad2(WORK_END_TIME.m)}`
+      };
+    }
   }
 
-  return { 
-    target: d, 
-    title: "Nächster Schulbeginn", 
-    prefix: "Beginn in" 
-  };
+  let d = new Date(now);
+  d.setDate(d.getDate() + 1); 
+  
+  while (true) {
+    const nextDay = d.getDay();
+    if (SCHOOL_DAYS.includes(nextDay)) {
+      d.setHours(START_TIME.h, START_TIME.m, 0, 0);
+      return { 
+        target: d, 
+        title: "Nächster Schulbeginn", 
+        prefix: "Beginn in" 
+      };
+    }
+    if (WORK_DAYS.includes(nextDay)) {
+      d.setHours(WORK_END_TIME.h, WORK_END_TIME.m, 0, 0);
+      return { 
+        target: d, 
+        title: "Nächstes Arbeitsende", 
+        prefix: `Noch ... bis ${pad2(WORK_END_TIME.h)}:${pad2(WORK_END_TIME.m)}` 
+      };
+    }
+    d.setDate(d.getDate() + 1);
+  }
 }
 
 function render() {
@@ -117,31 +132,24 @@ function render() {
   }
 }
 
-// Initialisierung
 function init() {
-  // Buttons generieren (mit data-Attribut statt onclick)
   elButtons.innerHTML = periods.map((p, i) => 
     `<button type="button" data-index="${i}">${p.label}</button>`
   ).join("");
 
-  // Events registrieren
-  
-  // 1. Öffnen/Schließen
   elOpener.addEventListener("click", () => {
     const isHidden = elButtons.hidden;
-    elButtons.hidden = !isHidden; // Toggle
+    elButtons.hidden = !isHidden; 
     elOpener.textContent = isHidden ? "Schließen" : "Öffnen";
     elOpener.setAttribute("aria-expanded", !isHidden);
   });
 
-  // 2. Stunden-Auswahl (Delegation)
   elButtons.addEventListener("click", (e) => {
     if (e.target.tagName === "BUTTON") {
       const idx = Number(e.target.dataset.index);
       customMode = true;
       customIndex = idx;
       
-      // UI zurücksetzen
       elButtons.hidden = true;
       elOpener.textContent = "Öffnen";
       elAuto.hidden = false;
@@ -149,17 +157,14 @@ function init() {
     }
   });
 
-  // 3. Auto-Reset
   elAuto.addEventListener("click", () => {
     customMode = false;
     elAuto.hidden = true;
     render();
   });
 
-  // Timer starten
   setInterval(render, 1000);
   render();
 }
 
-// Start
 init();
