@@ -1,32 +1,53 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Startseite</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="wrap">
-    <!-- "big-card" für das vergrößerte Fenster -->
-    <section class="card big-card" aria-live="polite">
-      <h1 id="MainTitle">Laden...</h1>
-      <p id="TimeDisplay" class="time-text">—</p>
 
-      <div class="controls">
-        <button id="opener" type="button" aria-expanded="false" aria-controls="timeButtons">
-          Öffnen
-        </button>
-        <button id="autoMode" type="button" class="ghost" hidden>
-          Zurück zu Auto
-        </button>
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <div class="nav-item" id="nav-home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        <span>Übersicht</span>
       </div>
+      <div class="nav-item" id="nav-school">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+        <span>Schule</span>
+      </div>
+      <div class="nav-item" id="nav-work">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+        <span>Arbeit</span>
+      </div>
+    </div>
+  </aside>
 
-      <!-- Menü ist durch 'hidden' standardmäßig ausgeblendet -->
-      <div id="timeButtons" class="grid" hidden></div>
+  <main class="content">
+    <section class="top-section">
+      <div class="card timer-card">
+        <h1 id="MainTitle">Laden...</h1>
+        <p id="TimeDisplay" class="time-text"></p>
+        
+        <div class="controls">
+          <button id="opener" class="ghost">Zeiten wählen</button>
+          <button id="autoMode" hidden>Auto Modus</button>
+        </div>
+        
+        <div id="timeButtons" class="grid" hidden></div>
+      </div>
+    </section>
+
+    <section class="news-section">
+      <h2>Aktuelle Nachrichten</h2>
+      <div class="news-grid" id="newsGrid">
+        <p>Lade Tagesschau...</p>
+      </div>
     </section>
   </main>
 
-  <script src="app.js" defer></script>
+  <script src="script.js"></script>
 </body>
 </html>
