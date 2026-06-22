@@ -15,6 +15,14 @@
       --radius: 12px;
     }
 
+    :root.dark-mode {
+      --bg-main: #000000;
+      --text-main: #f5f5f7;
+      --text-muted: #a1a1a6;
+      --hover-bg: rgba(255, 255, 255, 0.1);
+      --border-color: rgba(255, 255, 255, 0.15);
+    }
+
     * { box-sizing: border-box; }
 
     body {
@@ -29,9 +37,14 @@
       position: relative;
       overflow: hidden;
       padding: 16px;
+      transition: background 0.3s, color 0.3s;
     }
-    
-        .content-area {
+
+    :root.dark-mode body {
+      background-image: radial-gradient(circle at 100% 0%, #1c1c1e 0%, #000000 100%);
+    }
+
+    .content-area {
       position: absolute;
       top: 16px;
       bottom: 16px;
@@ -44,9 +57,12 @@
       flex-direction: column;
       overflow: hidden; 
       z-index: 1;
+      transition: background 0.3s;
     }
 
-    
+    :root.dark-mode .content-area {
+      background: #1c1c1e;
+    }
 
     .sidebar-container {
       position: absolute;
@@ -54,9 +70,7 @@
       bottom: 32px;
       left: 32px; 
       width: 260px;
-      /* Mehr Transparenz für den "Frost-Effekt" */
       background: rgba(235, 235, 237, 0.45);
-      /* Reduzierter Blur, damit dahinterliegende Elemente klarer scheinen */
       backdrop-filter: blur(15px) saturate(180%);
       -webkit-backdrop-filter: blur(15px) saturate(180%);
       border-radius: 20px;
@@ -66,6 +80,13 @@
       flex-direction: column;
       padding: 20px 12px;
       z-index: 10;
+      transition: background 0.3s, border 0.3s, box-shadow 0.3s;
+    }
+
+    :root.dark-mode .sidebar-container {
+      background: rgba(40, 40, 40, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
     }
 
     .nav-item {
@@ -110,9 +131,12 @@
       padding: 40px 60px 40px 320px; 
       background: linear-gradient(to bottom, #ffffff 0%, #ffffff 100%);
       border-bottom: 1px solid var(--border-color);
+      transition: background 0.3s, border-color 0.3s;
     }
 
-    
+    :root.dark-mode .timer-section {
+      background: linear-gradient(to bottom, #1c1c1e 0%, #1c1c1e 100%);
+    }
 
     h1 {
       margin: 0 0 12px;
@@ -145,15 +169,30 @@
       font-weight: 500;
       font-size: 1.05rem;
       cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    :root.dark-mode button {
+      background: #2c2c2e;
     }
 
     button:hover { background: #e8e8ed; }
+
+    :root.dark-mode button:hover {
+      background: #3a3a3c;
+    }
+
     button.primary { background: var(--apple-blue); color: white; border: none; }
     button.primary:hover { background: #0077ED; }
 
     .news-section {
       padding: 30px 0 40px 0;
       background: #ffffff;
+      transition: background 0.3s;
+    }
+
+    :root.dark-mode .news-section {
+      background: #1c1c1e;
     }
 
     .news-slider {
@@ -197,6 +236,11 @@
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid var(--border-color);
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    :root.dark-mode .news-img-wrap {
+      background: #2c2c2e;
     }
 
     .news-img {
@@ -300,7 +344,6 @@
 
     function determineNavType(now) {
       if (manualNavOverride) return manualNavType;
-      
       const day = now.getDay();
       if (WORK_DAYS.includes(day)) return "work";
       return "school";
@@ -336,8 +379,21 @@
       return { target: d, title: "Nächster Arbeitstag", prefix: `Feierabend in ... (um ${pad2(WORK_END_TIME.h)}:${pad2(WORK_END_TIME.m)})` };
     }
 
+    function applyTheme(now) {
+      const isOsDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const hour = now.getHours();
+      const isTimeDark = hour >= 20 || hour < 6;
+      
+      if (isOsDark || isTimeDark) {
+        document.documentElement.classList.add("dark-mode");
+      } else {
+        document.documentElement.classList.remove("dark-mode");
+      }
+    }
+
     function render() {
       const now = new Date();
+      applyTheme(now);
       
       const currentNavType = determineNavType(now);
       updateNavUI(currentNavType);
@@ -384,7 +440,7 @@
                 if (match) imgUrl = match[1];
               }
 
-              const imgHtml = imgUrl ? `<img src="${imgUrl}" class="news-img">` : `<div class="news-img" style="display:grid;place-items:center;background:#eee">Ohne Bild</div>`;
+              const imgHtml = imgUrl ? `<img src="${imgUrl}" class="news-img">` : `<div class="news-img" style="display:grid;place-items:center;background:#eee;color:#1d1d1f">Ohne Bild</div>`;
 
               return `
                 <a href="${item.link}" target="_blank" class="news-card">
